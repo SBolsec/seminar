@@ -17,7 +17,7 @@ type DiagramContextType = {
   snapGrid: [number, number];
   backgroundVariant: BackgroundVariant;
   setBackgroundVariant: (variant: BackgroundVariant) => void;
-  addNode: () => void;
+  addNode: (node: Node) => void;
   undo: () => void;
   redo: () => void;
   save: (elements: Elements) => void;
@@ -59,17 +59,16 @@ function ContextProvider({ children }: DiagramContextProvider) {
   const [backgroundVariant, setBackgroundVariant] =
     React.useState<BackgroundVariant>(BackgroundVariant.Dots);
 
-  const addNode = () => {
-    const node: FlowElement = {
+  const addNode = (node: Node) => {
+    const newNode: FlowElement = {
+      ...node,
       id: `node-${idCounter}`,
-      type: "input",
-      label: "Node",
       data: {
-        label: "Node",
+        label: `${node.type} node`,
       },
-      position: { x: 250, y: 5 },
     };
-    dispatch({ type: HistoryActionKind.ADD, payload: node });
+
+    dispatch({ type: HistoryActionKind.ADD, payload: newNode });
     setIdCounter(idCounter + 1);
   };
 

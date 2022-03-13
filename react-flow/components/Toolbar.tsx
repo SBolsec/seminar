@@ -17,7 +17,7 @@ function Toolbar({ title, children }: ToolbarProps) {
   const arrayChildren = React.Children.toArray(children);
 
   return (
-    <div className="flex items-center py-4 px-3 bg-indigo-600 text-white space-x-2">
+    <div className="flex items-center py-4 px-3 bg-gray-800 text-white space-x-2">
       {title && <span className="font-bold">{title}</span>}
 
       {React.Children.map(arrayChildren, (child, index) => (
