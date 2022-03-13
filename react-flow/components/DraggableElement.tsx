@@ -19,7 +19,7 @@ export default function DraggableElement({
   };
 
   const elementClassName = cx({
-    "bg-white text-black p-2 rounded": true,
+    "bg-white text-black p-2 rounded cursor-move": true,
     [className]: true,
   });
 

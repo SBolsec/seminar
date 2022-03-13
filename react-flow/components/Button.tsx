@@ -17,8 +17,8 @@ export default function Button({
 }: ButtonProps) {
   const buttonClassName = cx({
     "inline-flex items-center rounded-lg shadow-md mouse-pointer p-2": true,
-    "bg-blue-500 hover:bg-blue-400 text-white": true,
-    [className]: true,
+    "bg-blue-500 hover:bg-blue-400 text-white": !className,
+    [className]: className,
   });
 
   return (
