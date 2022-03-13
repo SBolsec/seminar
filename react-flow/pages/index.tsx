@@ -1,10 +1,13 @@
 import * as React from "react";
 
-import { PlusCircleIcon } from "@heroicons/react/outline";
-
 import ReactFlow, {
+  addEdge,
   Background,
+  Connection,
+  ConnectionLineType,
+  ConnectionMode,
   Controls,
+  Edge,
   Elements,
   MiniMap,
   Node,
@@ -14,7 +17,6 @@ import ReactFlow, {
 } from "react-flow-renderer";
 
 import BackgroundVariantSwitcher from "../components/BackgroundVariantSwitcher";
-import Button from "../components/Button";
 import DiagramProvider, {
   useDiagramContext,
 } from "../components/DiagramProvider/DiagramProvider";
@@ -23,6 +25,8 @@ import RedoButton from "../components/RedoButton";
 import SnapToGridButton from "../components/SnapToGridButton";
 import Toolbar from "../components/Toolbar";
 import UndoButton from "../components/UndoButton";
+import EntityNode from "../components/EntityNode";
+import RelationshipNode from "../components/RelationshipNode";
 
 export default function Home() {
   return (
@@ -36,28 +40,12 @@ export default function Home() {
 }
 
 function ToolBar() {
-  const { addNode } = useDiagramContext();
-
-  const onAddNode = () => {
-    addNode({
-      id: "id",
-      type: "input",
-      position: { x: 250, y: 5 },
-      data: {
-        label: "Node",
-      },
-    });
-  };
-
   return (
     <Toolbar title="React Flow Demo">
       <Toolbar.Segment>
         <UndoButton />
         <RedoButton />
       </Toolbar.Segment>
-      <Button onClick={onAddNode}>
-        <PlusCircleIcon className="h-6 w-6" />
-      </Button>
       <Toolbar.Segment>
         <SnapToGridButton />
       </Toolbar.Segment>
@@ -66,24 +54,24 @@ function ToolBar() {
       </Toolbar.Segment>
       <Toolbar.Segment>
         <DraggableElement
-          label="Input node"
-          type="input"
-          className="border border-blue-500"
+          label="Entity"
+          type="entity"
+          className="ring-2 ring-blue-500"
         />
         <DraggableElement
-          label="Default node"
-          type="default"
-          className="border border-black"
-        />
-        <DraggableElement
-          label="Output node"
-          type="output"
-          className="border border-red-300"
+          label="Relationship"
+          type="relationship"
+          className="ring-2 ring-green-500"
         />
       </Toolbar.Segment>
     </Toolbar>
   );
 }
+
+const nodeTypes = {
+  entity: EntityNode,
+  relationship: RelationshipNode,
+};
 
 function Diagram() {
   const reactFlowWrapper = React.useRef<HTMLDivElement>(null);
@@ -104,6 +92,10 @@ function Diagram() {
     setReactFlowInstance(_reactFlowInstance);
   };
 
+  const onConnect = (connection: Edge | Connection) => {
+    save(addEdge(connection, elements));
+  };
+
   const onElementsRemove = (elementsToRemove: Elements) => {
     save(removeElements(elementsToRemove, elements));
   };
@@ -117,13 +109,19 @@ function Diagram() {
     event.preventDefault();
 
     const reactFlowBounds = reactFlowWrapper.current!.getBoundingClientRect();
+    const type = event.dataTransfer.getData("application/reactflow");
     const newNode: Node = {
       id: "id",
-      type: event.dataTransfer.getData("application/reactflow"),
+      type: type,
       position: reactFlowInstance!.project({
         x: event.clientX - reactFlowBounds.left,
         y: event.clientY - reactFlowBounds.top,
       }),
+      data: {
+        label: `${type} node`,
+        handleCount: type === "entity" ? 3 : undefined,
+        handlePosition: type === "entity" ? 3 : undefined,
+      },
     };
 
     addNode(newNode);
@@ -133,10 +131,14 @@ function Diagram() {
     <div className="flex flex-grow" ref={reactFlowWrapper}>
       <ReactFlow
         elements={elements}
+        connectionMode={ConnectionMode.Loose}
+        nodeTypes={nodeTypes}
         deleteKeyCode={46}
         snapGrid={snapGrid}
         snapToGrid={snapToGrid}
+        connectionLineType={ConnectionLineType.Step}
         onlyRenderVisibleElements={true}
+        onConnect={onConnect}
         onElementsRemove={onElementsRemove}
         onLoad={onLoad}
         onDragOver={onDragOver}

@@ -62,10 +62,7 @@ function ContextProvider({ children }: DiagramContextProvider) {
   const addNode = (node: Node) => {
     const newNode: FlowElement = {
       ...node,
-      id: `node-${idCounter}`,
-      data: {
-        label: `${node.type} node`,
-      },
+      id: `${node.type}-${idCounter}`,
     };
 
     dispatch({ type: HistoryActionKind.ADD, payload: newNode });
