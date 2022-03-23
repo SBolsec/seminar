@@ -4,7 +4,6 @@ import ReactFlow, {
   addEdge,
   Background,
   Connection,
-  ConnectionLineType,
   ConnectionMode,
   Controls,
   Edge,
@@ -136,7 +135,6 @@ function Diagram() {
         deleteKeyCode={46}
         snapGrid={snapGrid}
         snapToGrid={snapToGrid}
-        connectionLineType={ConnectionLineType.Step}
         onlyRenderVisibleElements={true}
         onConnect={onConnect}
         onElementsRemove={onElementsRemove}
